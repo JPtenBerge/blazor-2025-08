@@ -64,8 +64,6 @@
   - componentenmodel is fijn
   - in de toekomst alsnog interactiviteit aangaan is relatief eenvoudig
 
-
-
 ## Geschiedenis
 
 - .NET Framework
@@ -82,6 +80,42 @@
 .NET Core 5 ====rename==> .NET 5
 
 
+## a11y
+
+Accessibility: 11 is het aantal karakters tussen de a en y van accessibility.
+
+- i18n - internationalization
+- l10n - localization
+- k8s kubernetes
+
+a11y:
+- "normale" mensen
+- slechtzienden/blinden
+- cognitieve issues
+- crawlers - zoekmachines
+
+
+## Dependency injection
+
+- managen van lifecycles van objecten
+- het is een vorm van Inversion of Control
+
+ASP.NET Core DI:
+
+- `.AddTransient()` - overal een nieuwe
+   - middleware controllers repo service service service service  allemaal nieuwe instanties.
+- `.AddScoped()` - per request een nieuwe.
+  - middleware controllers repo service service service service  `IWhateverService`
+- `.AddSingleton()` - 1 instance to rule them all
+  - shared state 
+
+Repository
+- tussenlaagje tussen wat uiteindelijk je db aanroept
+- centrale data access
+  - kolom `IsInactive`  true
+  - `Where(x => !x.IsInactive)`
+- database-onafhankelijkheid
+  - EF Core
 
 
 
@@ -92,4 +126,26 @@
 
 
 
+## Overig
 
+`Enhance` op een form/routelink plaatsen zodat request via AJAX verstuurd wordt.
+
+AJAX: Asynchronous JavaScript And XML
+- berichtje naar backend sturen via JavaScript
+- XHR: `XMLHttpRequest`
+- `fetch()
+`
+
+
+
+
+
+
+
+
+## Coole links
+
+- [Frontend frameworks benchmarks](https://github.com/krausest/js-framework-benchmark)
+- [Microsoft die wil dat je `s_` bij `static` members gebruikt](https://learn.microsoft.com/en-us/dotnet/
+csharp/fundamentals/coding-style/identifier-names)
+  - eigenlijk niet heel cool, maar wel relevant
