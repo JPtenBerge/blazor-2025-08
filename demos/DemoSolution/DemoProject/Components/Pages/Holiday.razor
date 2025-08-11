@@ -7,9 +7,29 @@
 
 <h3>Holiday</h3>
 
-Naam: @Name
+<h4>Bestemming toevoegen</h4>
 
-<button @onclick="ChangeName">Verander naam</button>
+<EditForm Model="NewDestination" OnValidSubmit="AddDestination" FormName="AddDestinationForm">
+    <DataAnnotationsValidator />
+    @* <FluentValidationValidator /> *@
+
+    <label for="input-location">Locatie:</label>
+    <InputText @bind-Value="NewDestination.Location" id="input-location" />
+    <ValidationMessage For="() => NewDestination.Location" />
+
+    <label for="input-rating">Rating:</label>
+    <InputNumber @bind-Value="NewDestination.Rating" id="input-rating" />
+    <ValidationMessage For="() => NewDestination.Rating" />
+
+    <label for="input-photo-url">Foto URL:</label>
+    <InputText @bind-Value="NewDestination.PhotoUrl" id="input-photo-url" />
+    <ValidationMessage For="() => NewDestination.PhotoUrl" />
+
+    <button>Submit</button>
+</EditForm>
+
+
+
 
 @if (Destinations is null || !Destinations.Any())
 {
@@ -32,7 +52,7 @@ else
                 <tr class="@(destination.Rating >= 8 ? "awesome" : "")">
                     <td>@destination.Location</td>
                     <td>@destination.Rating</td>
-                    <td><img src="@destination.PhotoUrl" /></td>
+                    <td><img src="@destination.PhotoUrl" alt="Foto van @destination.Location" /></td>
                 </tr>
 
             }
