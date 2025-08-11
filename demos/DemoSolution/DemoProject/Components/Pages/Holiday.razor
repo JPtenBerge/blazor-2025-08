@@ -1,0 +1,50 @@
+﻿@page "/holiday"
+@using DemoProject.Entities
+@{
+    Console.WriteLine("hoi");
+}
+
+
+<h3>Holiday</h3>
+
+Naam: @Name
+
+<button @onclick="ChangeName">Verander naam</button>
+
+@if (Destinations is null || !Destinations.Any())
+{
+    <text>Nog geen bestemmingen!</text>
+    <p>Nog geen bestemmingen!</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Bestemming</th>
+                <th>Rating</th>
+                <th>Fotootje</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var destination in Destinations)
+            {
+                <tr class="@(destination.Rating >= 8 ? "awesome" : "")">
+                    <td>@destination.Location</td>
+                    <td>@destination.Rating</td>
+                    <td><img src="@destination.PhotoUrl" /></td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+}
+
+
+
+
+@code {
+    public string Name { get; set; } = "JP";
+
+
+}
