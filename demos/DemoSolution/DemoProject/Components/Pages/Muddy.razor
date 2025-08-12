@@ -1,8 +1,89 @@
 ﻿@page "/muddy"
+@using DemoProject.Entities
+@using DemoProject.Repositories
+@using DemoProject.Components.Layout
+@rendermode InteractiveServer
+@inject IDestinationRepository DestinationRepo
+
 @* @layout Layout.KaleLayout *@
 
 <PageTitle>Muddy</PageTitle>
 
 <h3>Muddy</h3>
 
-<MudStaticButton Variant="Variant.Outlined" Color="Color.Primary">Klik mij</MudStaticButton>
+
+<h4>Autocompleter</h4>
+
+<Autocompleter Data="Destinations">
+    @* content projection *@
+    <ItemTemplate Context="destination">
+        <li>@destination.Location krijgt een @destination.Rating</li>
+    </ItemTemplate>
+</Autocompleter>
+
+@* <Autocompleter Data="Destinations" /> *@
+
+<h4 style="margin-top: 1rem;">Overig</h4>
+
+<input @bind-value="Name" @bind-value:event="oninput" />
+@* <input @bind:after *@
+
+<InputText @bind-Value="Name" />
+@* <MudTextField Immediate="true" /> *@
+@* <MyInputText @bind-Value="Name" /> *@
+
+
+<MijnComp Getal="12" Tekstje="@hoi" />
+
+
+Naam: @Name
+
+<MudButton OnClick="HandleClick">Klik NU op mij</MudButton>
+
+@if (Destinations is not null)
+{
+    <ul>
+        @foreach (var destination in Destinations)
+        {
+            <li @onclick="() => DoeIets(destination)">@destination.Location</li>
+        }
+    </ul>
+
+}
+
+@* <MudStaticButton Variant="Variant.Outlined" Color="Color.Primary">Klik mij</MudStaticButton> *@
+@code {
+    public string Name { get; set; } = "JP";
+    public List<Destination>? Destinations { get; set; }
+
+    private Timer _timer;
+
+    private string hoi = "bladiebla";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Destinations = (await DestinationRepo.GetAllAsync()).ToList();
+    }
+
+    void HandleClick()
+    {
+        Console.WriteLine("Whoa! Werkt!");
+
+        _timer = new Timer(new TimerCallback(async _ =>
+        {
+            Console.WriteLine("appending name!");
+            Name += " Yoran";
+
+
+            await InvokeAsync(() => StateHasChanged());
+
+        }), null, 1000, 1000);
+
+        Name += " ready!";
+    }
+
+    void DoeIets(Destination destination)
+    {
+        Console.WriteLine($"Klik op {destination.Location}");
+    }
+}

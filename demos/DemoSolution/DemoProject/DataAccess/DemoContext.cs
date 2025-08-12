@@ -18,6 +18,5 @@ public class DemoContext : DbContext
         modelBuilder.Entity<Destination>().Property(x => x.Rating).IsRequired();
         modelBuilder.Entity<Destination>().Property(x => x.PhotoUrl).IsRequired().HasMaxLength(400);
         modelBuilder.Entity<Destination>().Ignore(x => x.Description);
-
     }
 }

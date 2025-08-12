@@ -4,4 +4,42 @@
 
 <h1>Hello, world!</h1>
 
-Welcome to your new app.
+Naam: @Name
+
+<button @onclick="HandleClick">Klik NU op mij</button>
+
+@* <MudStaticButton Variant="Variant.Outlined" Color="Color.Primary">Klik mij</MudStaticButton> *@
+@code {
+    public string Name { get; set; } = "JP";
+
+    private Timer _timer;
+
+    void HandleClick()
+    {
+        Console.WriteLine("Whoa! Werkt!");
+
+        // setInterval()
+
+        
+        var t = new Thread(() => { });
+        t.Start();
+
+
+        // _timer = new Timer(new TimerCallback(async _ =>
+        // {
+        //     Console.WriteLine("appending name!");
+        //     Name += " Yoran";
+
+
+        //     await InvokeAsync(() => StateHasChanged());
+
+        // }), null, 1000, 1000);
+
+        Name += " ready!";
+    }
+
+    void Dispose()
+    {
+        
+    }
+}
