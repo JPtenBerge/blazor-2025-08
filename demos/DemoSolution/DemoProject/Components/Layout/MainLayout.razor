@@ -10,18 +10,21 @@
 @* Needed for snackbars *@
 <MudSnackbarProvider />
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
+<MudPaper Height="100vh" Style="overflow:hidden; position:relative;">
+    <MudDrawerContainer Class="mud-height-full">
+        <MudDrawer Open="true" Elevation="0" Variant="@DrawerVariant.Persistent" Color="Color.Warning">
+            <MudDrawerHeader>
+                <MudText Typo="Typo.h6">DemoProject</MudText>
+            </MudDrawerHeader>
+            <MudNavMenu>
+                <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard" IconColor="Color.Primary" Href="/">Home</MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.LocalLibrary" IconColor="Color.Primary" Href="/Weather">Weather</MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.LocalLibrary" IconColor="Color.Primary" Href="/Holiday">Holiday</MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.People" IconColor="Color.Primary" Href="/Muddy">Muddy</MudNavLink>
+            </MudNavMenu>
+        </MudDrawer>
+        <div class="mud-height-full">
             @Body
-        </article>
-    </main>
-</div>
+        </div>
+    </MudDrawerContainer>
+</MudPaper>
