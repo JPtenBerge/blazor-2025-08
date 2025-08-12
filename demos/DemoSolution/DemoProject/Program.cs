@@ -1,11 +1,14 @@
 using DemoProject.Components;
 using DemoProject.Repositories;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddSingleton<IDestinationRepository, DestinationRepository>();
+
+builder.Services.AddMudServices();
 
 builder.Services.AddRazorComponents();
 
