@@ -1,12 +1,19 @@
 using DemoProject.Components;
+using DemoProject.DataAccess;
 using DemoProject.Repositories;
+using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddSingleton<IDestinationRepository, DestinationRepository>();
+builder.Services.AddDbContext<DemoContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DemoContext"));
+});
+
+builder.Services.AddScoped<IDestinationRepository, DestinationDbRepository>();
 
 builder.Services.AddMudServices();
 
