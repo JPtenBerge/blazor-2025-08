@@ -15,4 +15,6 @@ public class Destination
 
     [Required]
     public string PhotoUrl { get; set; }
+
+    public IFormFile Description { get; set; }
 }

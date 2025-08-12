@@ -26,11 +26,15 @@ public partial class Holiday
     async Task AddDestination()
     {
         Console.WriteLine($"wow! Werkt! {NewDestination.Location}");
+
+        using var stream = NewDestination.Description.OpenReadStream();
+        using var reader = new StreamReader(stream);
+        var descriptionContent = await reader.ReadToEndAsync();
+        Console.WriteLine($"Heb ik description?? {descriptionContent}");
+
         await _destinationRepository.AddAsync(NewDestination);
         Destinations!.Add(NewDestination);
 
         // low coupling, high cohesion
-
-
     }
 }

@@ -7,59 +7,75 @@
 
 <h3>Holiday</h3>
 
-<h4>Bestemming toevoegen</h4>
+<div class="flex">
 
-<EditForm Model="NewDestination" OnValidSubmit="AddDestination" FormName="AddDestinationForm" Enhance>
-    <DataAnnotationsValidator />
-    @* <FluentValidationValidator /> *@
+    <div>
+        <h4>Bestemming toevoegen</h4>
 
-    <label for="input-location">Locatie:</label>
-    <InputText @bind-Value="NewDestination.Location" id="input-location" />
-    <ValidationMessage For="() => NewDestination.Location" />
+        <EditForm Model="NewDestination" OnValidSubmit="AddDestination" FormName="AddDestinationForm" Enhance enctype="multipart/form-data">
+            <DataAnnotationsValidator />
+            @* <FluentValidationValidator /> *@
 
-    <label for="input-rating">Rating:</label>
-    <InputNumber @bind-Value="NewDestination.Rating" id="input-rating" />
-    <ValidationMessage For="() => NewDestination.Rating" />
+            <ol>
+                <li>
+                    <label for="input-location">Locatie:</label>
+                    <InputText @bind-Value="NewDestination.Location" id="input-location" />
+                    <ValidationMessage For="() => NewDestination.Location" />
+                </li>
+                <li>
+                    <label for="input-rating">Rating:</label>
+                    <InputNumber @bind-Value="NewDestination.Rating" id="input-rating" />
+                    <ValidationMessage For="() => NewDestination.Rating" />
+                </li>
+                <li>
+                    <label for="input-photo-url">Foto URL:</label>
+                    <InputText @bind-Value="NewDestination.PhotoUrl" id="input-photo-url" />
+                    <ValidationMessage For="() => NewDestination.PhotoUrl" />
+                </li>
+                <li>
+                    <label for="input-description">Beschrijving:</label>
+                    <input type="file" name="NewDestination.Description" />
+                </li>
+                <li>
+                    <button>Submit</button>
+                </li>
+            </ol>
+        </EditForm>
+    </div>
+    <div>
 
-    <label for="input-photo-url">Foto URL:</label>
-    <InputText @bind-Value="NewDestination.PhotoUrl" id="input-photo-url" />
-    <ValidationMessage For="() => NewDestination.PhotoUrl" />
+        <h4>El lijst</h4>
 
-    <button>Submit</button>
-</EditForm>
+        @if (Destinations is null || !Destinations.Any())
+        {
+            <text>Nog geen bestemmingen!</text>
+            <p>Nog geen bestemmingen!</p>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bestemming</th>
+                        <th>Rating</th>
+                        <th>Fotootje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var destination in Destinations)
+                    {
+                        <tr class="@(destination.Rating >= 8 ? "awesome" : "")">
+                            <td>@destination.Location</td>
+                            <td>@destination.Rating</td>
+                            <td><img src="@destination.PhotoUrl" alt="Foto van @destination.Location" /></td>
+                        </tr>
 
-
-
-
-@if (Destinations is null || !Destinations.Any())
-{
-    <text>Nog geen bestemmingen!</text>
-    <p>Nog geen bestemmingen!</p>
-}
-else
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Bestemming</th>
-                <th>Rating</th>
-                <th>Fotootje</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var destination in Destinations)
-            {
-                <tr class="@(destination.Rating >= 8 ? "awesome" : "")">
-                    <td>@destination.Location</td>
-                    <td>@destination.Rating</td>
-                    <td><img src="@destination.PhotoUrl" alt="Foto van @destination.Location" /></td>
-                </tr>
-
-            }
-        </tbody>
-    </table>
-}
-
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
 
 
 

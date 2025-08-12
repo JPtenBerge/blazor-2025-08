@@ -6,3 +6,14 @@ td img {
 .awesome {
     background: lightgoldenrodyellow;
 }
+
+form ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.flex {
+    display: flex;
+    gap: 2rem;
+}
