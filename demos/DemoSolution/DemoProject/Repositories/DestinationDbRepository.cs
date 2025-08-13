@@ -19,11 +19,18 @@ public class DestinationDbRepository : IDestinationRepository
         return await _context.Destinations.ToListAsync();
     }
 
+
+    public async Task<Destination?> GetAsync(int id)
+    {
+        return await _context.Destinations.SingleOrDefaultAsync(x => x.Id == id);
+    }
+
     public async Task AddAsync(Destination newDestination)
     {
         _context.Destinations.Add(newDestination);
         await _context.SaveChangesAsync();
     }
+
 
     //public IEnumerable<Destination> GetTop3Best() // meestal liever geen tabel dump methode
     //{

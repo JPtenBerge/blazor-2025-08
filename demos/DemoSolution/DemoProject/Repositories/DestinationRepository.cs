@@ -24,6 +24,11 @@ public class DestinationRepository : IDestinationRepository
         return Task.CompletedTask;
     }
 
+    public Task<Destination?> GetAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
     //public IEnumerable<Destination> GetTop3Best() // meestal liever geen tabel dump methode
     //{
 

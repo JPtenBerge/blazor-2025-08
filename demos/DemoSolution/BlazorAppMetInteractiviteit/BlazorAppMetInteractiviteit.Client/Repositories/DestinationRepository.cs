@@ -10,6 +10,11 @@ public class DestinationRepository : IDestinationRepository
         throw new NotImplementedException();
     }
 
+    public Task<Destination?> GetAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<IEnumerable<Destination>> GetAllAsync()
     {
         throw new NotImplementedException();

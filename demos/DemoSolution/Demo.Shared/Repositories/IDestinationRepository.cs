@@ -6,4 +6,5 @@ public interface IDestinationRepository
 {
     Task AddAsync(Destination newDestination);
     Task<IEnumerable<Destination>> GetAllAsync();
+    Task<Destination?> GetAsync(int id);
 }

@@ -4,6 +4,9 @@ using Demo.Shared.Repositories;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using DemoProject.Repositories;
+using DemoProject.Endpoints;
+using Scalar.AspNetCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +30,10 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+builder.Services.AddOpenApi();
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -42,10 +49,19 @@ app.UseHttpsRedirection();
 
 app.UseAntiforgery();
 
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+}
+
+
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(BlazorAppMetInteractiviteit.Client._Imports).Assembly);
+
+app.MapDestinationEndpoints();
 
 app.Run();
