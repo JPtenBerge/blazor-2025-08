@@ -8,10 +8,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddDbContext<DemoContext>(options =>
+//builder.Services.AddDbContext<DemoContext>(options =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DemoContext"));
+//}, ServiceLifetime.Transient);
+
+builder.Services.AddDbContextFactory<DemoContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DemoContext"));
 });
+
 builder.Services.AddScoped<IDestinationRepository, DestinationDbRepository>();
 
 builder.Services.AddMudServices();

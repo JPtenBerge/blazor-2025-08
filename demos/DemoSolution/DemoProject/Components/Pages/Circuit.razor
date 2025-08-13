@@ -1,0 +1,59 @@
+﻿@page "/circuit"
+@using DemoProject.DataAccess
+@using DemoProject.Entities
+@using Microsoft.EntityFrameworkCore
+@using System.Text.Json
+@inject IDbContextFactory<DemoContext> ContextFactory;
+@rendermode InteractiveAuto
+
+<h3>Circuit</h3>
+
+<button @onclick="GetAll">Get all</button>
+<button @onclick="Add">Add</button>
+<button @onclick="Edit">Edit</button>
+
+<input @bind-value="ToEditDestination.Id" />
+
+<pre>@JsonSerializer.Serialize(ToEditDestination)</pre>
+
+@if (Destinations is not null)
+{
+    <ul>
+        @foreach (var destination in Destinations)
+        {
+            <li>@destination.Location heeft als ID @destination.Id</li>
+        }
+    </ul>
+}
+
+@code {
+    public List<Destination>? Destinations { get; set; }
+
+    public Destination ToAddDestination { get; set; } = new() { Location = "q", PhotoUrl = "w", Rating = 5 };
+    public Destination ToEditDestination { get; set; } = new() { Location = "z", PhotoUrl = "x", Rating = 10 };
+
+    async Task GetAll()
+    {
+        using var context = await ContextFactory.CreateDbContextAsync();
+        Destinations = await context.Destinations.ToListAsync();
+    }
+
+    async Task Add()
+    {
+        using var context = await ContextFactory.CreateDbContextAsync();
+        context.Destinations.Add(ToAddDestination);
+        await context.SaveChangesAsync();
+    }
+    async Task Edit()
+    {
+        using var context = await ContextFactory.CreateDbContextAsync();
+        context.Destinations.Update(ToEditDestination);
+
+        // var persisted = await Context.Destinations.SingleAsync(x => x.Id == ToAddDestination.Id);
+        // persisted.Location = " wertk!";
+
+        await context.SaveChangesAsync();
+    }
+
+
+}
