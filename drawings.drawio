@@ -1,9 +1,15 @@
 <mxfile host="65bd71144e">
     <diagram id="VteJITER3eXXvVMXJnZ_" name="Page-1">
-        <mxGraphModel dx="1002" dy="571" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="835" dy="476" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
+                <mxCell id="pATdDJaF84_vAX1kviGK-51" value="BROWSER" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;verticalAlign=bottom;" vertex="1" parent="1">
+                    <mxGeometry x="410" y="245" width="240" height="235" as="geometry"/>
+                </mxCell>
+                <mxCell id="pATdDJaF84_vAX1kviGK-50" value="SERVER" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=bottom;" vertex="1" parent="1">
+                    <mxGeometry x="170" y="245" width="240" height="235" as="geometry"/>
+                </mxCell>
                 <mxCell id="2" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="200" y="160" width="320" height="10" as="geometry"/>
                 </mxCell>
@@ -93,6 +99,15 @@
                 </mxCell>
                 <mxCell id="49" value="download JS/parsen" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
                     <mxGeometry x="430" y="400" width="70" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="pATdDJaF84_vAX1kviGK-49" value="prerendering" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="290" y="245" width="90" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="pATdDJaF84_vAX1kviGK-52" value="" style="shape=flexArrow;endArrow=classic;html=1;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="380" y="470" as="sourcePoint"/>
+                        <mxPoint x="430" y="470" as="targetPoint"/>
+                    </mxGeometry>
                 </mxCell>
             </root>
         </mxGraphModel>

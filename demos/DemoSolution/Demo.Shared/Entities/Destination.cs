@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DemoProject.Entities;
+namespace Demo.Shared.Entities;
 
 public class Destination
 {
@@ -16,5 +16,5 @@ public class Destination
     [Required]
     public string PhotoUrl { get; set; }
 
-    public IFormFile Description { get; set; }
+    //public IFormFile Description { get; set; }
 }

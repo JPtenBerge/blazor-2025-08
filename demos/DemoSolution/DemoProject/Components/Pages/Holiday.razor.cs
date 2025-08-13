@@ -1,5 +1,5 @@
-﻿using DemoProject.Entities;
-using DemoProject.Repositories;
+﻿using Demo.Shared.Entities;
+using Demo.Shared.Repositories;
 using Microsoft.AspNetCore.Components;
 
 namespace DemoProject.Components.Pages;
@@ -27,10 +27,10 @@ public partial class Holiday
     {
         Console.WriteLine($"wow! Werkt! {NewDestination.Location}");
 
-        using var stream = NewDestination.Description.OpenReadStream();
-        using var reader = new StreamReader(stream);
-        var descriptionContent = await reader.ReadToEndAsync();
-        Console.WriteLine($"Heb ik description?? {descriptionContent}");
+        //using var stream = NewDestination.Description.OpenReadStream();
+        //using var reader = new StreamReader(stream);
+        //var descriptionContent = await reader.ReadToEndAsync();
+        //Console.WriteLine($"Heb ik description?? {descriptionContent}");
 
         await _destinationRepository.AddAsync(NewDestination);
         Destinations!.Add(NewDestination);

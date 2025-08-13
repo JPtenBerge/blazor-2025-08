@@ -24,7 +24,7 @@ namespace DemoProject.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DemoProject.Entities.Destination", b =>
+            modelBuilder.Entity("Demo.Shared.Entities.Destination", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

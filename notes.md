@@ -117,14 +117,42 @@ Repository
 - database-onafhankelijkheid
   - EF Core
 
+## Component library installeren
 
+Meestal ongeveer deze stappen doorlopen:
 
+- NuGet package installeren
+- globale componenten opnemen in `App.razor`/`MainLayout.razor`
+- dependency injection-zaken regelen in `Program.cs`
+- global usings `@using MudBlazor`
+- `index.html` static assets opnemen - `.css`, fonts, `.js`
 
+En dan klaar om te gaan!
 
+Wees je ook bewust dat niet alle component libraries compatibel zijn met Blazor Static SSR, bijv. MudBlazor en dat er ook een MudBlazor.Static
 
+## Circuit-issues Blazor Server
 
+Dependency injection werkt met deze 3 methoden:
 
+```cs
+.AddTransient()
+.AddScoped()
+.AddSingleton()
+```
+Per editie van Blazor zit daar verschil in:
 
+- Blazor Static SSR
+  - `.AddScoped()` - per request, voorspelbaar!
+- Blazor Server
+  - `.AddScoped()` - per socketconnectie, specifiek "per SignalR-circuit"
+    - SignalR: wrapper om websocket, met als extraatjes dat je berichtjes naar groepen kan sturen en dat hij reconnect als de verbinding wegvalt.
+- Blazor WebAssembly
+  - `.AddScoped()` - per tabblad zolang de gebruiker gebruikt maakt van de webapp in dat tabblad
+    - F5 en alles begint weer opnieuw
+    - [is een Singleton](https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/dependency-injection?view=aspnetcore-9.0#service-lifetime)
+
+Bij Blazor Server i.c.m. EF Core treden hier het snelst issues bij op, maar het kan evengoed met andere services gebeuren.
 
 ## Overig
 
@@ -133,15 +161,7 @@ Repository
 AJAX: Asynchronous JavaScript And XML
 - berichtje naar backend sturen via JavaScript
 - XHR: `XMLHttpRequest`
-- `fetch()
-`
-
-
-
-
-
-
-
+- `fetch()`
 
 ## Coole links
 
