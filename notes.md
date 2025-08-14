@@ -154,6 +154,50 @@ Per editie van Blazor zit daar verschil in:
 
 Bij Blazor Server i.c.m. EF Core treden hier het snelst issues bij op, maar het kan evengoed met andere services gebeuren.
 
+## `HttpClient`/Flurl
+
+HTTP-berichtje vanaf frontend naar server sturen: AJAX (`XMLHttpRequest`/`fetch()`)
+
+`HttpClient` nadeeltjes:
+- unittesten, met name mocken. Er is geen `IHttpClient`
+- voelt wat lomp met de POST-response te verwerken
+  - wel correct. Het ontvangen van de headers en de body kun je apart `await`en
+- headers meesturen
+
+Bovenstaande nadeeltjes zijn makkelijk weg te werken met kleine wrappertjes (typed HTTP Client) of zelf een paar extra extension methods te schrijven. Een library als Flurl kan ook.
+
+### CORS: Cross-origin resource sharing
+
+- Dat je niet zomaar van domein A ==> domein B een request mag sturen
+- is een security-iets
+- wordt enkel in de browser gecheckt
+- is enkel bij AJAX want dit mag allemaal wel:
+  ```html
+  <form action="https://anderdomein.nl">
+  <script src="https://anderdomein.nl/script.js"></script>  CDN
+  <img src="...">
+  <link href="https://googlefonts.com">
+  ```
+
+Hoe weet de browser dat een request vanaf domein A gestuurd mag worden?
+
+```text
+preflight check  HEAD/OPTIONS <== Allow-Control-Access-Origin: https://domeina.nl
+POST ==> domeinb.nl
+```
+
+## Blazor rendermodes
+
+Twee projecten, wat plaats je waar?
+
+- DemoProject
+  - Blazor Server
+  - componenten die NOOIT naar webassembly hoeven te worden gecompileerd.
+- DemoProject.Client
+  - Blazor WebAssembly
+  - componenten die mogelijk naar webassembly moeten te worden gecompileerd.
+  - ook bruikbaar voor Blazor Server
+
 ## Overig
 
 `Enhance` op een form/routelink plaatsen zodat request via AJAX verstuurd wordt.
@@ -169,3 +213,5 @@ AJAX: Asynchronous JavaScript And XML
 - [Microsoft die wil dat je `s_` bij `static` members gebruikt](https://learn.microsoft.com/en-us/dotnet/
 csharp/fundamentals/coding-style/identifier-names)
   - eigenlijk niet heel cool, maar wel relevant
+- [Awesome Blazor](https://github.com/AdrienTorris/awesome-blazor) voor lijstje met toffe CSS/component libraries
+ Vet snelle coole site met preloaden als je over producten hovert: https://www.mcmaster.com/
