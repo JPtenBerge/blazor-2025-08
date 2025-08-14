@@ -1,6 +1,7 @@
 using DemoDuende;
 using DemoDuende.Components;
 using Duende.Bff.Blazor;
+using Duende.Bff.Yarp;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -12,6 +13,10 @@ builder.Services.AddRazorComponents()
 builder.Services.AddBff()
     .AddServerSideSessions() // Add in-memory implementation of server side sessions
     .AddBlazorServer();
+
+builder.Services.AddReverseProxy()
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
+    .AddBffExtensions();
 
 // Register an abstraction for retrieving weather forecasts that can run on the server. 
 // On the client, in WASM, this will be retrieved via an HTTP call to the server.
@@ -37,9 +42,9 @@ builder.Services.AddAuthentication(options =>
     })
     .AddOpenIdConnect("oidc", options =>
     {
-        options.Authority = "https://demo.duendesoftware.com";
-        options.ClientId = "interactive.confidential";
-        options.ClientSecret = "secret";
+        options.Authority = "https://localhost:5001";
+        options.ClientId = "cooleblazorapp";
+        options.ClientSecret = "49C1A7E1-0C79-4A89-A3D6-A37998FB86B0";
         options.ResponseType = "code";
         options.ResponseMode = "query";
 
@@ -50,7 +55,7 @@ builder.Services.AddAuthentication(options =>
         options.Scope.Clear();
         options.Scope.Add("openid");
         options.Scope.Add("profile");
-        options.Scope.Add("api");
+        //options.Scope.Add("api");
         options.Scope.Add("offline_access");
 
         options.TokenValidationParameters.NameClaimType = "name";
@@ -79,12 +84,14 @@ else
 app.UseHttpsRedirection();
 
 app.UseRouting();
-app.UseAuthentication();
+app.UseAuthentication(); // leest cookie uit
 
 // Add the BFF middleware which performs anti forgery protection
 app.UseBff();
 app.UseAuthorization();
 app.UseAntiforgery();
+
+app.MapReverseProxy();
 
 // Add the BFF management endpoints, such as login, logout, etc.
 app.MapBffManagementEndpoints();

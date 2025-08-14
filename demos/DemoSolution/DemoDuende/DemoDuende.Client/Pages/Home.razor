@@ -1,10 +1,15 @@
 ﻿@page "/"
 
-@rendermode InteractiveServer
+@rendermode InteractiveWebAssembly
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, Blazor BFF!</h1>
+
+<button @onclick="GetTest">GET test</button>
+<button @onclick="GetWeather">GET weather</button>
+
+Renderer: @RendererInfo.Name
 
 <AuthorizeView>
     <Authorized>
@@ -18,3 +23,16 @@
     </NotAuthorized>
 </AuthorizeView>
 
+@code {
+    [Inject] public HttpClient Http { get; set; }
+    async Task GetTest()
+    {
+        var response = await Http.GetStringAsync("https://localhost:5002/api/test");
+        Console.WriteLine($"response: {response}");
+    }
+    async Task GetWeather()
+    {
+        var response = await Http.GetStringAsync("https://localhost:5002/api/weatherforecast");
+        Console.WriteLine($"response: {response}");
+    }
+}
