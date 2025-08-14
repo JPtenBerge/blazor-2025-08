@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using BlazorAppMetInteractiviteit.Client.Components
+@inherits LayoutComponentBase
 
 @* Required *@
 <MudThemeProvider />
@@ -23,9 +24,14 @@
                 <MudNavLink Match="@NavLinkMatch.All" Icon="@Icons.Material.Filled.LocalLibrary" IconColor="Color.Primary" Href="/Holiday">Holiday</MudNavLink>
                 <MudNavLink Match="@NavLinkMatch.All" Icon="@Icons.Material.Filled.People" IconColor="Color.Primary" Href="/Muddy">Muddy</MudNavLink>
                 <MudNavLink Match="@NavLinkMatch.All" Icon="@Icons.Material.Filled.AddModerator" IconColor="Color.Primary" Href="/Circuit">Circuit</MudNavLink>
+                <MudNavLink Match="@NavLinkMatch.All" Icon="@Icons.Material.Filled.VerifiedUser" IconColor="Color.Primary" Href="/Auth">Auth</MudNavLink>
             </MudNavMenu>
         </MudDrawer>
+
         <div class="mud-height-full">
+            <div style="display: flex; justify-content: flex-end;"<LoginDisplay /></div>
+            <hr />
+
             @Body
         </div>
     </MudDrawerContainer>
