@@ -32,6 +32,13 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddOpenApi();
 
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("blazorfrontend", policy =>
+//    {
+//        policy.WithOrigins("https://domeina.nl").AllowAnyHeader().AllowCredentials().AllowAnyMethod();
+//    });
+//});
 
 
 var app = builder.Build();
@@ -46,7 +53,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
+//app.UseCors("blazorfrontend");
 app.UseAntiforgery();
 
 if (app.Environment.IsDevelopment())

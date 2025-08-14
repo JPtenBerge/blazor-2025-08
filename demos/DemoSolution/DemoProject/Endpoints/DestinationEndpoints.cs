@@ -1,9 +1,6 @@
 ﻿using Demo.Shared.Entities;
 using Demo.Shared.Repositories;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using Microsoft.EntityFrameworkCore.Storage;
-using System.ComponentModel;
 
 namespace DemoProject.Endpoints;
 
@@ -29,8 +26,9 @@ public static class DestinationEndpoints
         return destination == null ? TypedResults.NotFound($"Destination ID {id} does not exist") : TypedResults.Ok(destination);
     }
 
-    public static void Post(Destination newDestination, IDestinationRepository destinationRepo)
+    public static async Task<Ok<Destination>> Post(Destination newDestination, IDestinationRepository destinationRepo)
     {
-        throw new NotImplementedException();
+        await destinationRepo.AddAsync(newDestination); // sets Id prop
+        return TypedResults.Ok(newDestination);
     }
 }
