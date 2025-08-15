@@ -1,4 +1,5 @@
 ﻿@page "/auth"
+@using System.Security.Claims
 @rendermode InteractiveWebAssembly
 
 <PageTitle>Home</PageTitle>
@@ -8,22 +9,51 @@
 <button @onclick="GetTest">GET test</button>
 <button @onclick="GetWeather">GET weather</button>
 
-Renderer: @RendererInfo.Name
+<p>Renderer: @RendererInfo.Name</p>
+
+@if (User is not null)
+{
+    <table>
+        <tr>
+            <th>Subject</th>
+            <th>Type</th>
+            <th>Value</th>
+        </tr>
+        @foreach (var claim in User.Claims)
+        {
+            <tr>
+                <td>@claim.Subject</td>
+                <td>@claim.Type</td>
+                <td>@claim.Value</td>
+            </tr>
+        }
+    </table>
+}
 
 <AuthorizeView>
     <Authorized>
-      <strong>Hello, @context.User.Identity?.Name</strong>
+        <strong>Hello, @context.User.Identity?.Name</strong>
     </Authorized>
     <Authorizing>
-      <div>logging in</div>
+        <div>logging in</div>
     </Authorizing>
     <NotAuthorized>
-      <div>not logged in</div>
+        <div>not logged in</div>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
     [Inject] public HttpClient Http { get; set; }
+    [Inject] public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+    public ClaimsPrincipal? User { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        User = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+    }
+
+
     async Task GetTest()
     {
         var response = await Http.GetStringAsync("https://localhost:5002/api/test");

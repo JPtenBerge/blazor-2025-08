@@ -5,7 +5,7 @@ namespace DemoApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Policy = "alleencoolemensen")]
 public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
