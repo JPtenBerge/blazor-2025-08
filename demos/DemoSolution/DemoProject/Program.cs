@@ -84,7 +84,7 @@ builder.Services.AddAuthentication(options =>
         options.Scope.Clear();
         options.Scope.Add("openid");
         options.Scope.Add("profile");
-        //options.Scope.Add("api");
+        options.Scope.Add("scope2");
         options.Scope.Add("offline_access");
 
         options.TokenValidationParameters.NameClaimType = "name";

@@ -15,7 +15,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     {
         ValidateAudience = false,
         ValidateIssuer = true,
-        NameClaimType = ClaimTypes.NameIdentifier,
+        NameClaimType = JwtClaimTypes.Name,
     };
 
     // HTTP header Authorization: Bearer <jwt>
@@ -25,8 +25,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("alleencoolemensen", policy =>
     {
         policy.RequireAuthenticatedUser();
-        //policy.RequireUserName("2");
-        policy.RequireClaim(ClaimTypes.NameIdentifier, "2");
+        policy.RequireClaim(JwtClaimTypes.Name, "Bob Smith");
     });
 });
 
@@ -39,11 +38,9 @@ app.UseHttpsRedirection();
 
 app.Use(async (context, next) =>
 {
-    Console.WriteLine($"Request binnen: {context.Request.QueryString.Value}");
-
+    Console.WriteLine($"JWT:\r\n{context.Request.Headers.Authorization}");
     await next(context);
 });
-
 
 app.UseAuthentication();
 app.UseAuthorization();
