@@ -1,0 +1,93 @@
+﻿@inherits TestContext
+
+<h3>CommentDeleteComponentTests</h3>
+
+@code {
+    [Fact]
+    public void RendersEmptyWhenCommentIsNull()
+    {
+        // Act
+        var cut = Render(@<CommentDeleteComponent />);
+
+        // Assert
+        cut.MarkupMatches(
+    @<text></text>
+        );
+    }
+
+    [Fact]
+    public void RendersForm_WhenCommentIsNotNull()
+    {
+        Comment comment = new Comment() { Id = 1, Subject = "s1", Body = "b1", PhotoId = 1 };
+
+        // Act
+        var cut = Render(@<CommentDeleteComponent Comment="comment" />);
+
+        // Assert
+        cut.MarkupMatches(@<div class="card">
+        <div class="card-header">
+            <h5 class="card-title text-danger">Delete Comment?</h5>
+        </div>
+        <div class="card-body">
+            <p class="card-text">s1</p>
+            <p class="card-text">b1</p>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-danger">Delete!</button>
+            <button class="btn btn-secondary">Cancel</button>
+        </div>
+    </div>
+    );
+    }
+
+    [Fact]
+    public void DeleteTriggersOnDeleteComment()
+    {
+        //Arrange
+        Comment comment = new Comment() { Id = 1, Subject = "s1", Body = "b1", PhotoId = 1 };
+        var cut = Render(@<CommentDeleteComponent Comment="comment" OnDeleteComment="OnDeleteComment" />);
+
+        bool deleteTriggered = false;
+        void OnDeleteComment(Comment commentToDelete)
+        {
+            deleteTriggered = true;
+            comment = commentToDelete;
+        }
+
+        // Act
+        cut.Find("button.btn-danger").Click();
+
+        // Assert
+        deleteTriggered.Should().BeTrue();
+        comment.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void DeleteTriggersCommentStateChanged()
+    {
+        // Arrange
+        Comment comment = new Comment() { Id = 1, Subject = "s1", Body = "b1", PhotoId = 1 };
+        CommentStates CommentState = CommentStates.Delete;
+        var cut = Render(@<CommentDeleteComponent Comment="comment" @bind-CommentState="CommentState" />);
+
+        // Act
+        cut.Find("button.btn-danger").Click();
+
+        // Assert
+        CommentState.Should().Be(CommentStates.View);
+    }
+    [Fact]
+    public void CancelTriggersCommentStateChanged()
+    {
+        // Arrange
+        Comment comment = new Comment() { Id = 1, Subject = "s1", Body = "b1", PhotoId = 1 };
+        CommentStates CommentState = CommentStates.Delete;
+        var cut = Render(@<CommentDeleteComponent Comment="comment" @bind-CommentState="CommentState" />);
+
+        // Act
+        cut.Find("button.btn-secondary").Click();
+
+        // Assert
+        CommentState.Should().Be(CommentStates.View);
+    }
+}

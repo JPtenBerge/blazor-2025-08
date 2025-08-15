@@ -1,0 +1,42 @@
+﻿@if(Photo is not null){
+    <div class="card">
+        <img src="@Photo.DataUrl" class="card-img-top" alt="@Photo.Title">
+        <div class="card-body">
+            <h5 class="card-title">@Photo.Title</h5>
+            <p class="card-text">@Photo.Description</p>
+            <p class="card-text">@Photo.Id</p>
+        </div>
+        @if (ShowFooter)
+        {
+            <div class="card-footer">
+                @if (ShowDetails)
+                {
+                    <NavLink href="@($"photos/details/{Photo.Id}")" class="card-link">Details</NavLink>
+                }
+                @if (ShowUpdate)
+                {
+                    <NavLink href="@($"photos/edit/{Photo.Id}")" class="card-link">Update</NavLink>
+                }
+                @if (ShowDelete)
+                {
+                    <NavLink href="@($"photos/delete/{Photo.Id}")" class="card-link">Delete</NavLink>
+                }
+            </div>
+        }
+    </div>
+}
+@code {
+    [Parameter]
+    public Photo Photo { get; set; } = default!;
+
+    [Parameter]
+    public bool ShowDetails { get; set; } = false;
+
+    [Parameter]
+    public bool ShowUpdate { get; set; } = false;
+
+    [Parameter]
+    public bool ShowDelete { get; set; } = false;
+
+    private bool ShowFooter => ShowDetails || ShowUpdate || ShowDelete;
+}

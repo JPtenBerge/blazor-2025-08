@@ -1,0 +1,81 @@
+﻿@inherits TestContext
+<h3>CommentViewComponentTests</h3>
+
+@code {
+    [Fact]
+    public void RendersEmpty_WhenCommentIsNull()
+    {
+        // Arrange
+        
+        // Act
+        var cut = Render(@<CommentViewComponent />);
+
+        // Assert
+        cut.MarkupMatches(
+            @<text></text>
+        );
+    }
+    [Fact]
+    public void RendersComment_WhenCommentIsNotNull()
+    {
+        // Arrange
+        Comment comment = new Comment() { Id = 1, Subject = "s1", Body = "b1", PhotoId = 1 };
+        
+        // Act
+        var cut = Render(@<CommentViewComponent Comment="comment" />);
+
+        // Assert
+        cut.MarkupMatches(
+    @<text>
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Comment</h5>
+            </div>
+            <div class="card-body">
+                <dl>
+                    <dt>Subject</dt>
+                    <dd>s1</dd>
+                    <dt>Body</dt>
+                    <dd>b1</dd>
+                </dl>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary">Edit</button>
+                <button class="btn btn-warning">Delete</button>
+            </div>
+        </div>
+    </text>
+    );
+    }
+
+    [Fact]
+    public void EditTriggersCommentStateChanged()
+    {
+        // Arrange
+        Comment comment = new Comment() { Id = 1, Subject = "s1", Body = "b1", PhotoId = 1 };
+        
+        CommentStates CommentState = CommentStates.View;
+        var cut = Render<CommentViewComponent>(@<CommentViewComponent Comment="comment" @bind-CommentState="CommentState" />);
+        
+        // Act
+        cut.Find("button.btn-primary").Click();
+        
+        // Assert
+        CommentState.Should().Be(CommentStates.Edit);
+    }
+
+    [Fact]
+    public void DeleteTriggersCommentStateChanged()
+    {
+        // Arrange
+        Comment comment = new Comment() { Id = 1, Subject = "s1", Body = "b1", PhotoId = 1 };
+        CommentStates CommentState = CommentStates.View;
+        var cut = Render<CommentViewComponent>(@<CommentViewComponent Comment="comment" @bind-CommentState="CommentState" />);
+
+        // Act        
+        cut.Find("button.btn-warning").Click();
+
+        // Assert
+        CommentState.Should().Be(CommentStates.Delete);
+    }
+}

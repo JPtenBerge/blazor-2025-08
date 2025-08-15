@@ -1,0 +1,118 @@
+﻿@inherits TestContext
+<h3>CommentsComponentTests</h3>
+
+@code {
+    [Fact]
+    public void PersistsCommentsInPersistentComponentState()
+    {
+        // Arrange
+        List<Comment> comments = new() { new Comment() };
+
+        Mock<ICommentsRepository> mockCommentsRepository = new Mock<ICommentsRepository>();
+        //mockCommentsRepository.Setup(x => x.GetCommentsForPhotoAsync(It.IsAny<int>())).ReturnsAsync(comments);
+        Services.AddSingleton(mockCommentsRepository.Object);
+
+        ComponentFactories.AddStub<CommentComponentSplit>();
+        var fakeState = this.AddFakePersistentComponentState();
+        
+        fakeState.Persist(nameof(comments), comments);
+
+        // Act
+        var cut = Render(@<CommentsComponent />);
+        
+        fakeState.TriggerOnPersisting();
+
+        bool foundState = fakeState.TryTake<List<Comment>>(nameof(comments), out var data);
+
+        // Assert
+        foundState.Should().BeTrue();
+        data.Should().BeEquivalentTo(comments);
+
+    }
+
+    [Fact]
+    public void RendersOneInsert_WhenCommentsIsNull()
+    {
+        // Arrange
+        List<Comment> comments = null; // new() { new Comment() };
+
+        Mock<ICommentsRepository> mockCommentsRepository = new Mock<ICommentsRepository>();
+        //mockCommentsRepository.Setup(x => x.GetCommentsForPhotoAsync(It.IsAny<int>())).ReturnsAsync(comments);
+        Services.AddSingleton(mockCommentsRepository.Object);
+
+        ComponentFactories.AddStub<CommentComponentSplit>();
+        var fakeState = this.AddFakePersistentComponentState();
+
+        fakeState.Persist(nameof(comments), comments);
+
+        // Act
+        var cut = Render(@<CommentsComponent />);
+
+        fakeState.TriggerOnPersisting();
+
+        var stub = cut.FindComponent<Stub<CommentComponentSplit>>();
+
+        //Assert
+        
+        stub.Instance.Parameters.Get(x => x.CommentState).Should().Be(CommentStates.Insert);
+    }
+
+    [Fact]
+    public void RendersOneInsertAndOneView_WhenCommentsContainsOneComment()
+    {
+        // Arrange
+        List<Comment> comments = new() { new Comment() };
+
+        Mock<ICommentsRepository> mockCommentsRepository = new Mock<ICommentsRepository>();
+        //mockCommentsRepository.Setup(x => x.GetCommentsForPhotoAsync(It.IsAny<int>())).ReturnsAsync(comments);
+        Services.AddSingleton(mockCommentsRepository.Object);
+
+        ComponentFactories.AddStub<CommentComponentSplit>();
+        var fakeState = this.AddFakePersistentComponentState();
+
+        fakeState.Persist(nameof(comments), comments);
+
+        // Act
+        var cut = Render(@<CommentsComponent />);
+
+        fakeState.TriggerOnPersisting();
+
+        var stubs = cut.FindComponents<Stub<CommentComponentSplit>>();
+
+        //Assert
+
+        stubs.Should().HaveCount(2);
+        stubs[0].Instance.Parameters.Get(x => x.CommentState).Should().Be(CommentStates.Insert);
+        stubs[1].Instance.Parameters.Get(x => x.CommentState).Should().Be(CommentStates.View);
+    }
+
+    [Fact]
+    public void InvokesRepositoryWhenStateNotPersisted()
+    {
+        // Arrange
+        List<Comment> comments = new() { new Comment() };
+
+        Mock<ICommentsRepository> mockCommentsRepository = new Mock<ICommentsRepository>();
+        mockCommentsRepository.Setup(x => x.GetCommentsForPhotoAsync(It.IsAny<int>())).ReturnsAsync(comments).Verifiable();
+        Services.AddSingleton(mockCommentsRepository.Object);
+
+        ComponentFactories.AddStub<CommentComponentSplit>();
+        var fakeState = this.AddFakePersistentComponentState();
+
+        //fakeState.Persist(nameof(comments), comments);
+
+        // Act
+        var cut = Render(@<CommentsComponent />);
+
+        //fakeState.TriggerOnPersisting();
+
+        var stubs = cut.FindComponents<Stub<CommentComponentSplit>>();
+
+        //Assert
+        mockCommentsRepository.Verify(x => x.GetCommentsForPhotoAsync(It.IsAny<int>()), Times.Once);
+
+        stubs.Should().HaveCount(2);
+        stubs[0].Instance.Parameters.Get(x => x.CommentState).Should().Be(CommentStates.Insert);
+        stubs[1].Instance.Parameters.Get(x => x.CommentState).Should().Be(CommentStates.View);
+    }
+}

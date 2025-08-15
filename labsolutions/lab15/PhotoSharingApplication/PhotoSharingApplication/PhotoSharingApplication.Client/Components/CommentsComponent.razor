@@ -1,0 +1,77 @@
+﻿@implements IDisposable
+@inject PersistentComponentState ApplicationState
+@inject ICommentsRepository CommentsRepository
+
+<h3>Comments</h3>
+
+<CommentComponentSplit Comment="newComment" CommentState="CommentStates.Insert" OnAddComment="AddComment" />
+
+@if (comments is not null)
+{
+    @foreach (var comment in comments)
+    {
+        <CommentComponentSplit Comment="comment" CommentState="CommentStates.View" OnUpdateComment="UpdateComment" OnDeleteComment="DeleteComment" />
+    }
+}
+
+@code {
+    [Parameter]
+    public int PhotoId { get; set; }
+
+    private Comment newComment = default!;
+
+    private List<Comment> comments = default!;
+    private PersistingComponentStateSubscription persistingSubscription;
+
+    override protected async Task OnInitializedAsync()
+    {
+        newComment = new Comment() { PhotoId = PhotoId };
+        
+        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
+
+        if (!ApplicationState.TryTakeFromJson <List<Comment>> (nameof(comments), out var restored))
+        {
+            comments = await CommentsRepository.GetCommentsForPhotoAsync(PhotoId);
+        }
+        else
+        {
+            comments = restored!;
+        }
+    }
+
+    private Task PersistData()
+    {
+        ApplicationState.PersistAsJson(nameof(comments), comments);
+        return Task.CompletedTask;
+    }
+
+    void IDisposable.Dispose()
+    {
+        persistingSubscription.Dispose();
+    }
+
+    async Task AddComment(Comment comment)
+    {
+        // Add comment
+        Console.WriteLine($"Add comment {comment.Id}, {comment.Subject}, {comment.Body}");
+        await CommentsRepository.AddCommentAsync(comment);
+        comments = await CommentsRepository.GetCommentsForPhotoAsync(PhotoId);
+        newComment = new Comment() { PhotoId = PhotoId };
+    }
+
+    async Task UpdateComment(Comment comment)
+    {
+        // Update comment
+        Console.WriteLine($"Update comment {comment.Id}, {comment.Subject}, {comment.Body}");
+        await CommentsRepository.UpdateCommentAsync(comment);
+        comments = await CommentsRepository.GetCommentsForPhotoAsync(PhotoId);
+    }
+
+    async Task DeleteComment(Comment comment)
+    {
+        // Delete comment
+        Console.WriteLine($"Delete comment {comment.Id}, {comment.Subject}, {comment.Body}");
+        await CommentsRepository.DeleteCommentAsync(comment.Id);
+        comments = await CommentsRepository.GetCommentsForPhotoAsync(PhotoId);
+    }
+}

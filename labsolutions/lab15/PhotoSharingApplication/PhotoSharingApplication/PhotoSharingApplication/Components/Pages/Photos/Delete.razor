@@ -1,0 +1,44 @@
+﻿@page "/photos/delete/{id:int}"
+@using Microsoft.AspNetCore.Authorization
+@inject IPhotosRepository PhotosRepository
+@inject NavigationManager NavigationManager
+
+@attribute [Authorize]
+<h3>Delete</h3>
+
+@if (photo is null)
+{
+    <p>Photo not found</p>
+} 
+else
+{
+    <h3 class="text-danger">Are you sure you want to delete this?</h3>
+    <div class="col">
+        <PhotoCard Photo="photo"/>
+        <EditForm FormName="PhotoDeleteForm" Model="photo" OnSubmit="DeletePhoto">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </EditForm>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm(FormName = "PhotoDeleteForm")]
+    Photo? photo { get; set;}
+
+    protected override async Task OnParametersSetAsync()
+    {
+        photo ??= await PhotosRepository.GetPhotoByIdAsync(Id);
+    }
+
+    async Task DeletePhoto()
+    {
+        if(photo is not null)
+        {
+            await PhotosRepository.DeletePhotoAsync(photo.Id);
+            NavigationManager.NavigateTo("photos/all");
+        }
+    }
+}

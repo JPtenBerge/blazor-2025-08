@@ -1,0 +1,170 @@
+﻿@inherits TestContext
+@using PhotoSharingApplication.Components
+@using PhotoSharingApplication.Components.Pages.Photos
+
+<h3>EditorTests</h3>
+
+@code {
+    [Fact]
+    public void RendersNewPhoto_WhenIdIsNull()
+    {
+        // Arrange
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+        
+        // Act
+        var cut = Render(@<Editor/>);
+
+            // Assert
+            cut.MarkupMatches(
+                @<text>
+        <h3>Editor</h3>
+        <form enctype="multipart/form-data">
+            <input step="any" hidden="" type="number" name="photo.Id" class="valid" value="0">
+            <div class="mb-3">
+                <label for="photoTitle" class="form-label">Title:</label>
+                <input id="photoTitle" name="photo.Title" class="form-control valid" value="New Photo">
+            </div>
+            <div class="mb-3">
+                <label for="photoDescription" class="form-label">Description (optional):</label>
+                <textarea id="photoDescription" name="photo.Description" class="form-control valid"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="fileModelFile" class="form-label">File:</label>
+                <input name="fileModel.File" class="form-control" id="fileModelFile" type="file">
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+        <img alt="New Photo" class="img-fluid rounded mx-auto d-block">
+                </text>);
+    }
+
+    [Fact]
+    public void RendersExistingPhoto_WhenIdIsNotNull()
+    {
+        // Arrange
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        mock.Setup(mbox => mbox.GetPhotoByIdAsync(1)).ReturnsAsync(new Photo() { Id = 1, Title = "p1", Description = "d1", ImageMimeType="img/jpg", PhotoFile = [1,2,3,4,5] });
+
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+        
+        // Act
+        var cut = Render(@<Editor Id="1"/>);
+
+        // Assert
+        cut.MarkupMatches(
+            @<text>
+        <h3>Editor</h3>
+        <form enctype="multipart/form-data">
+            <input step="any" hidden="" type="number" name="photo.Id" class="valid" value="1">
+            <div class="mb-3">
+                <label for="photoTitle" class="form-label">Title:</label>
+                <input id="photoTitle" name="photo.Title" class="form-control valid" value="p1">
+            </div>
+            <div class="mb-3">
+                <label for="photoDescription" class="form-label">Description (optional):</label>
+                <textarea id="photoDescription" name="photo.Description" class="form-control valid" value="d1"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="fileModelFile" class="form-label">File:</label>
+                <input name="fileModel.File" class="form-control" id="fileModelFile" type="file">
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+        <img src="data:img/jpg;base64,AQIDBAU=" alt="p1" class="img-fluid rounded mx-auto d-block">
+            </text>);
+    }
+
+    [Fact]
+    public void ClickingOnSubmit_InvokesRepositoryUpdatePhotoAsync_WhenPhotoIdIsNot0()
+    {
+        // Arrange
+        Photo photo = new Photo() { Id = 1, Title = "p1" };
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        mock.Setup(mbox=>mbox.GetPhotoByIdAsync(1)).ReturnsAsync(photo);
+
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+        
+        // Act
+        var cut = Render(@<Editor Id="1"/>);
+        cut.Find("form").Submit();
+
+        // Assert
+        mock.Verify(mbox => mbox.UpdatePhotoAsync(photo), Moq.Times.Once);
+    }
+
+    [Fact]
+    public void ClickingOnSubmit_InvokesRepositoryAddPhotoAsync_WhenPhotoIdIs0()
+    {
+        // Arrange
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+
+        // Act
+        var cut = Render(@<Editor />);
+        cut.Find("form").Submit();
+
+        // Assert
+        mock.Verify(mbox => mbox.AddPhotoAsync(It.IsAny<Photo>()), Moq.Times.Once);
+    }
+
+    [Fact]
+    public void ClickingOnSubmit_AddsFileUploadContentToPhoto_WhenPhotoIdIsNot0AndFileContentIsPresent()
+    {
+        // Arrange
+        Photo photo = new Photo() { Id = 1, Title = "p1" };
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        mock.Setup(mbox => mbox.GetPhotoByIdAsync(1)).ReturnsAsync(photo);
+
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+        // Create an InputFileContent with string content
+        InputFileContent fileToUpload = InputFileContent.CreateFromBinary([1, 2, 3, 4, 5], contentType: "img/jpg");
+
+        var cut = Render(@<Editor Id="1" />);
+
+        // Act
+    
+        // Find the InputFile component
+        IRenderedComponent<InputFile> inputFile = cut.FindComponent<InputFile>();
+        // Upload the file to upload to the InputFile component
+        inputFile.UploadFiles(fileToUpload);
+
+        cut.Find("form").Submit();
+
+        // Assert
+        cut.WaitForState(() =>
+        {
+            //mock.Verify(mbox => mbox.UpdatePhotoAsync(It.Is<Photo>(p => p.PhotoFile != null && p.ImageMimeType == "img/jpg")), Moq.Times.Once);
+            photo.PhotoFile.Should().BeEquivalentTo(new byte[] { 1, 2, 3, 4, 5 });
+            photo.ImageMimeType.Should().Be("img/jpg");
+            return true;
+        });
+
+        
+    }
+
+    [Fact]
+    public void FormIsCorrectlyBoundToPhotoFields()
+    {
+        // Arrange
+        Photo photo = new Photo() { Id = 1, Title = "p1" };
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        mock.Setup(mbox => mbox.GetPhotoByIdAsync(1)).ReturnsAsync(photo);
+
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+
+        var cut = Render(@<Editor Id="1" />);
+
+        // Act
+        cut.Find("#photoTitle").Change("p2");
+        cut.Find("#photoDescription").Change("d2");
+
+        cut.Find("form").Submit();
+
+        // Assert        
+        photo.Title.Should().Be("p2");
+        photo.Description.Should().Be("d2");
+    }
+}

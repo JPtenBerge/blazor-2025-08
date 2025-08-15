@@ -1,0 +1,102 @@
+﻿@inherits TestContext
+@using PhotoSharingApplication.Components
+@using PhotoSharingApplication.Components.Pages.Photos
+<h3>DeleteTests</h3>
+
+@code {
+    [Fact]
+    public void RendersPhotoNotFound_WhenPhotoIsNull()
+    {
+        // Arrange
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        mock.Setup(mbox => mbox.GetPhotoByIdAsync(1)).ReturnsAsync((Photo)null);
+
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+
+        // Act
+        var cut = Render(@<Delete Id="1" />);
+
+        // Assert
+        cut.MarkupMatches(
+            @<text>
+                <h3>Delete</h3>
+                <p>Photo not found</p>
+            </text>
+        );
+    }
+
+    [Fact]
+    public void RendersPhotoCard_WhenPhotoIsNotNull()
+    {
+        // Arrange
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        mock.Setup(mbox => mbox.GetPhotoByIdAsync(1)).ReturnsAsync(new Photo() { Id = 1, Title = "p1" });
+
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+
+        // Act
+        var cut = Render(@<Delete Id="1" />);
+
+
+        // Assert
+        cut.FindComponent<PhotoCard>().Should().NotBeNull();
+    }
+
+    [Fact]
+    public void RendersEditForm_WhenPhotoIsNotNull()
+    {
+        // Arrange
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        mock.Setup(mbox => mbox.GetPhotoByIdAsync(1)).ReturnsAsync(new Photo() { Id = 1, Title = "p1" });
+
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+
+        // Act
+        var cut = Render(@<Delete Id="1" />);
+
+
+        // Assert
+        cut.FindComponent<EditForm>().Should().NotBeNull();
+    }
+
+    [Fact]
+    public void ClickingOnSubmit_InvokesRepositoryDelete()
+    {
+        // Arrange
+        Photo photo = new Photo() { Id = 1, Title = "p1" };
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        mock.Setup(mbox => mbox.GetPhotoByIdAsync(1)).ReturnsAsync(photo);
+        mock.Setup(mbox => mbox.DeletePhotoAsync(1)).ReturnsAsync(photo).Verifiable();
+
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+
+        // Act
+        var cut = Render(@<Delete Id="1" />);
+
+        // Assert
+        cut.Find("button").Click();
+
+        mock.Verify(mbox => mbox.DeletePhotoAsync(1), Moq.Times.Once);
+    }
+
+    [Fact]
+    public void ClickingOnSubmit_NavigatesToPhotosAll()
+    {
+        // Arrange
+        Photo photo = new Photo() { Id = 1, Title = "p1" };
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        mock.Setup(mbox => mbox.GetPhotoByIdAsync(1)).ReturnsAsync(photo);
+        mock.Setup(mbox => mbox.DeletePhotoAsync(1)).ReturnsAsync(photo).Verifiable();
+
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+
+        // Act
+        var cut = Render(@<Delete Id="1" />);
+
+        // Assert
+        cut.Find("button").Click();
+
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
+        navMan.Uri.Should().Be("http://localhost/photos/all");
+    }
+}

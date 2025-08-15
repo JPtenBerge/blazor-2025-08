@@ -1,0 +1,28 @@
+﻿@page "/photos/details/{id:int}"
+@inject IPhotosRepository PhotosRepository
+
+@if (photo is null)
+{
+    <p>Photo not found</p>
+} 
+else
+{
+    <h3>Details of Photo @photo.Id</h3>
+
+    <div class="col">
+        <PhotoCard Photo="photo" ShowDelete ShowUpdate />
+        <CommentsComponent PhotoId="@photo.Id" @rendermode="InteractiveWebAssembly" />
+    </div>
+}
+
+@code {
+    Photo? photo;
+
+    [Parameter]
+    public int Id { get; set; }   
+
+    protected override async Task OnInitializedAsync()
+    {
+        photo = await PhotosRepository.GetPhotoByIdAsync(Id);
+    }
+}

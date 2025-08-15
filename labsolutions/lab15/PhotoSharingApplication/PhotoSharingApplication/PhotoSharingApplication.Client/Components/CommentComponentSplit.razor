@@ -1,0 +1,45 @@
+﻿@if (comment is not null)
+{
+    @switch (commentState)
+    {
+        case CommentStates.View:
+            <CommentViewComponent Comment="comment" @bind-CommentState="commentState" />
+            break;
+        case CommentStates.Insert:
+            <CommentInsertComponent Comment="comment" @bind-CommentState="commentState" OnAddComment="OnAddComment" />
+            break;
+        case CommentStates.Edit:
+            <CommentEditComponent Comment="comment" @bind-CommentState="commentState" OnUpdateComment="OnUpdateComment" />
+            break;
+        case CommentStates.Delete:
+            <CommentDeleteComponent Comment="comment" @bind-CommentState="commentState" OnDeleteComment="OnDeleteComment" />
+            break;
+    }
+}
+
+@code {
+    [Parameter]
+    public CommentStates CommentState { get; set; } = CommentStates.View;
+    private CommentStates commentState;
+
+    [Parameter]
+    public Comment? Comment { get; set; }
+    private Comment? comment;
+
+    [Parameter]
+    public EventCallback<Comment> OnAddComment { get; set; }
+
+    [Parameter]
+    public EventCallback<Comment> OnDeleteComment { get; set; }
+
+    [Parameter]
+    public EventCallback<Comment> OnUpdateComment { get; set; }
+
+
+    protected override void OnParametersSet()
+    {
+        commentState = CommentState;
+        comment = Comment is null ? null : new Comment() { Id = Comment.Id, PhotoId = Comment.PhotoId, Subject = Comment.Subject, Body = Comment.Body };
+    }
+
+}

@@ -1,0 +1,121 @@
+﻿@inherits TestContext
+@using PhotoSharingApplication.Components
+
+<h3>PhotoCardTests</h3>
+
+@code {
+    [Fact]
+    public void RendersEmpty_WhenPhotoIsNull()
+    {
+        // Arrange
+        Photo photo = null;
+
+        // Act
+        var cut = Render(@<PhotoCard Photo="photo" />);
+
+        // Assert
+        cut.MarkupMatches("");
+    }
+    [Fact]
+    public void DoesNotRenderFooter_WhenShowDetails_ShowDelete_And_ShowEdit_AreFalse()
+    {
+        // Arrange
+        var photo = new Photo()
+        {
+            Id = 1,
+            Title = "Test Title",
+            Description = "Test Description",
+            PhotoFile = [1,2,3,4,5,6,7,8],
+            ImageMimeType = "image/jpeg"
+        };
+
+        // Act
+        var cut = Render(@<PhotoCard Photo="photo"/>);
+
+            // Assert
+        cut.MarkupMatches(@<div class="card">
+        <img src="data:image/jpeg;base64,AQIDBAUGBwg=" class="card-img-top" alt="Test Title">
+        <div class="card-body">
+            <h5 class="card-title">Test Title</h5>
+            <p class="card-text">Test Description</p>
+            <p class="card-text">1</p>
+        </div>
+    </div>);
+    }
+
+    [Fact]
+    public void RendersFooterWithDetailsLink_WhenShowDetailsIsTrue()
+    {
+        // Arrange
+        var photo = new Photo()
+            {
+                Id = 1,
+                Title = "Test Title",
+                Description = "Test Description",
+                PhotoFile = [1, 2, 3, 4, 5, 6, 7, 8],
+                ImageMimeType = "image/jpeg"
+            };
+
+        // Act
+        var cut = Render(@<PhotoCard Photo="photo" ShowDetails />);
+
+        // Assert
+
+        var footer = cut.Find(".card-footer");
+
+        footer.MarkupMatches(@<div class="card-footer">
+            <a href="photos/details/1" class="card-link">Details</a>
+        </div>);   
+    }
+
+    [Fact]
+    public void RendersFooterWithDeleteLink_WhenShowDeleteIsTrue()
+    {
+        // Arrange
+        var photo = new Photo()
+            {
+                Id = 1,
+                Title = "Test Title",
+                Description = "Test Description",
+                PhotoFile = [1, 2, 3, 4, 5, 6, 7, 8],
+                ImageMimeType = "image/jpeg"
+            };
+
+        // Act
+        var cut = Render(@<PhotoCard Photo="photo" ShowDelete />);
+
+        // Assert
+
+        var footer = cut.Find(".card-footer");
+
+        footer.MarkupMatches(@<div class="card-footer">
+        <a href="photos/delete/1" class="card-link">Delete</a>
+    </div>);
+    }
+    [Fact]
+    public void RendersFooterWithEditLink_WhenShowUpdateIsTrue()
+    {
+        // Arrange
+        var photo = new Photo()
+            {
+                Id = 1,
+                Title = "Test Title",
+                Description = "Test Description",
+                PhotoFile = [1, 2, 3, 4, 5, 6, 7, 8],
+                ImageMimeType = "image/jpeg"
+            };
+
+        // Act
+        var cut = Render(@<PhotoCard Photo="photo" ShowUpdate />);
+
+        // Assert
+
+        var footer = cut.Find(".card-footer");
+
+        footer.MarkupMatches(@<div class="card-footer">
+        <a href="photos/edit/1" class="card-link">Update</a>
+    </div>);
+    }
+
+}
+    

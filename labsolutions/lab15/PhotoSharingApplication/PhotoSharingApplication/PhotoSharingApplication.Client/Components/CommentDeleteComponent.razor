@@ -1,0 +1,32 @@
+﻿@inherits CommentComponentBase
+@if (comment is not null)
+{
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title text-danger">Delete Comment?</h5>
+        </div>
+        <div class="card-body">
+            <p class="card-text">@comment.Subject</p>
+            <p class="card-text">@comment.Body</p>
+        </div>
+        <div class="card-footer">
+            <button @onclick="OnDeleteConfirmedClicked" class="btn btn-danger">Delete!</button>
+            <button @onclick="OnCancelClicked" class="btn btn-secondary">Cancel</button>
+        </div>
+    </div>
+}
+@code {
+    [Parameter]
+    public EventCallback<Comment> OnDeleteComment { get; set; }
+
+    async Task OnCancelClicked()
+    {
+        await NotifyCommentStateChanged(CommentStates.View);
+    }
+
+    async Task OnDeleteConfirmedClicked()
+    {
+        await NotifyCommentStateChanged(CommentStates.View);
+        await OnDeleteComment.InvokeAsync(comment);
+    }
+}

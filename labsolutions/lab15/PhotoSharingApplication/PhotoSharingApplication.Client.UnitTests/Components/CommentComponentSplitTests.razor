@@ -1,0 +1,95 @@
+﻿@inherits TestContext
+<h3>CommentComponentSplitTests</h3>
+
+@code {
+    [Fact]
+    public void RendersEmpty_WhenCommentIsNull()
+    {
+        // Arrange
+        
+        // Act
+        var cut = Render(@<CommentComponentSplit />);
+
+        // Assert
+        cut.MarkupMatches(string.Empty);
+    }
+
+    [Fact]
+    public void RendersCommentViewComponent_WhenCommentIsNotNull()
+    {
+        // Arrange
+        Comment comment = new Comment() { Id = 1, PhotoId = 1, Subject = "Subject", Body = "Body" };
+        ComponentFactories.AddStub<CommentViewComponent>();
+
+        // Act
+        var cut = Render(@<CommentComponentSplit Comment="comment" />);
+
+        IRenderedComponent<Stub<CommentViewComponent>> commentSubComponentStub = cut.FindComponent<Stub<CommentViewComponent>>();
+        Comment commentPassedToSubComponent = commentSubComponentStub.Instance.Parameters.Get(x => x.Comment);
+        CommentStates commentStatePassedToSubComponent = commentSubComponentStub.Instance.Parameters.Get(x => x.CommentState);
+
+        // Assert
+        cut.HasComponent<Stub<CommentViewComponent>>().Should().BeTrue();
+        commentPassedToSubComponent.Should().BeEquivalentTo(comment);
+        commentStatePassedToSubComponent.Should().Be(CommentStates.View);
+    }
+
+    [Fact]
+    public void RendersCommentInsertComponent_WhenCommentIsNotNull_AndCommentStateIsInsert()
+    {
+        // Arrange
+        Comment comment = new Comment() { Id = 1, PhotoId = 1, Subject = "Subject", Body = "Body" };
+        ComponentFactories.AddStub<CommentInsertComponent>();
+
+        // Act
+        var cut = Render(@<CommentComponentSplit Comment="comment" CommentState="CommentStates.Insert" />);
+
+        IRenderedComponent<Stub<CommentInsertComponent>> commentSubComponentStub = cut.FindComponent<Stub<CommentInsertComponent>>();
+        Comment commentPassedToSubComponent = commentSubComponentStub.Instance.Parameters.Get(x => x.Comment);
+        CommentStates commentStatePassedToSubComponent = commentSubComponentStub.Instance.Parameters.Get(x => x.CommentState);
+
+        // Assert
+        cut.HasComponent<Stub<CommentInsertComponent>>().Should().BeTrue();
+        commentPassedToSubComponent.Should().BeEquivalentTo(comment);
+        commentStatePassedToSubComponent.Should().Be(CommentStates.Insert);
+    }
+    [Fact]
+    public void RendersCommentDeleteComponent_WhenCommentIsNotNull_AndCommentStateIsInsert()
+    {
+        // Arrange
+        Comment comment = new Comment() { Id = 1, PhotoId = 1, Subject = "Subject", Body = "Body" };
+        ComponentFactories.AddStub<CommentDeleteComponent>();
+
+        // Act
+        var cut = Render(@<CommentComponentSplit Comment="comment" CommentState="CommentStates.Delete" />);
+
+        IRenderedComponent<Stub<CommentDeleteComponent>> commentSubComponentStub = cut.FindComponent<Stub<CommentDeleteComponent>>();
+        Comment commentPassedToSubComponent = commentSubComponentStub.Instance.Parameters.Get(x => x.Comment);
+        CommentStates commentStatePassedToSubComponent = commentSubComponentStub.Instance.Parameters.Get(x => x.CommentState);
+
+        // Assert
+        cut.HasComponent<Stub<CommentDeleteComponent>>().Should().BeTrue();
+        commentPassedToSubComponent.Should().BeEquivalentTo(comment);
+        commentStatePassedToSubComponent.Should().Be(CommentStates.Delete);
+        
+    }
+    [Fact]
+    public void RendersCommentEditComponent_WhenCommentIsNotNull_AndCommentStateIsEdit()
+    {
+        // Arrange
+        Comment comment = new Comment() { Id = 1, PhotoId = 1, Subject = "Subject", Body = "Body" };
+        ComponentFactories.AddStub<CommentEditComponent>();
+
+        // Act
+        var cut = Render(@<CommentComponentSplit Comment="comment" CommentState="CommentStates.Edit" />);
+
+        IRenderedComponent<Stub<CommentEditComponent>> commentEditComponentStub = cut.FindComponent<Stub<CommentEditComponent>>();
+        Comment commentPassedToSubComponent = commentEditComponentStub.Instance.Parameters.Get(x => x.Comment);
+        CommentStates commentStatePassedToSubComponent = commentEditComponentStub.Instance.Parameters.Get(x => x.CommentState);
+
+        // Assert
+        cut.HasComponent<Stub<CommentEditComponent>>().Should().BeTrue();
+        commentPassedToSubComponent.Should().BeEquivalentTo(comment);
+        commentStatePassedToSubComponent.Should().Be(CommentStates.Edit);
+    }
+}

@@ -1,0 +1,87 @@
+﻿@using PhotoSharingApplication.Client.Components
+@using PhotoSharingApplication.Components
+@using PhotoSharingApplication.Components.Pages.Photos
+@inherits TestContext
+<h3>DetailsTests</h3>
+
+@code {
+    [Fact]
+    public void RendersPhotoNotFound_WhenPhotoIsNull()
+    {
+        // Arrange
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        mock.Setup(mbox => mbox.GetPhotoByIdAsync(1)).ReturnsAsync((Photo)null);
+
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+        
+        // Act
+        var cut = Render(@<Details Id="1" />);
+
+        // Assert
+        cut.MarkupMatches(
+            @<text>
+                <p>Photo not found</p>
+            </text>
+    );
+    }
+
+    [Fact]
+    public void InvokesRepositoryGetPhotoById()
+    {
+        //Arrange
+        Photo photo = new Photo() { Id = 1, Title = "p1" };
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        mock.Setup(mbox => mbox.GetPhotoByIdAsync(1)).ReturnsAsync(photo).Verifiable();
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+        ComponentFactories.AddStub<CommentsComponent>();
+
+        //Act
+        var cut = Render(@<Details Id="1" />);
+
+        //Assert
+        mock.Verify(mbox => mbox.GetPhotoByIdAsync(1), Moq.Times.Once);
+    }
+
+    [Fact]
+    public void RendersPhotoCard_WhenPhotoIsNotNull()
+    {
+        // Arrange
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        mock.Setup(mbox => mbox.GetPhotoByIdAsync(1)).ReturnsAsync(new Photo() { Id = 1, Title = "p1" });
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+
+        ComponentFactories.AddStub<CommentsComponent>();
+
+        // Act
+        var cut = Render(@<Details Id="1" />);
+
+        // Assert
+        cut.FindComponent<PhotoCard>().Should().NotBeNull();
+    }
+
+    [Fact]
+    public void RendersCommentsComponent_WhenPhotoIsNotNull()
+    {
+        // Arrange
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        mock.Setup(mbox => mbox.GetPhotoByIdAsync(1)).ReturnsAsync(new Photo() { Id = 1, Title = "p1" });
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+
+        ComponentFactories.AddStub<PhotoCard>("<PhotoCard/>");
+        ComponentFactories.AddStub<CommentsComponent>("<CommentsComponent/>");
+
+        // Act
+        var cut = Render(@<Details Id="1" />);
+
+        // Assert
+        cut.MarkupMatches(
+            @<text>
+                <h3>Details of Photo 1</h3>
+                <div class="col">
+                    <PhotoCard/>
+                    <CommentsComponent />
+                </div>
+            </text>
+        );
+    }
+}

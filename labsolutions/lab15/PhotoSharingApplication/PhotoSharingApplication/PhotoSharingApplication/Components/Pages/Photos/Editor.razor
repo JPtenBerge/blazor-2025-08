@@ -1,0 +1,82 @@
+﻿@page "/photos/create"
+@page "/photos/edit/{id:int}"
+@using Microsoft.AspNetCore.Authorization
+@inject IPhotosRepository PhotosRepository
+@inject NavigationManager NavigationManager
+
+@attribute [Authorize]
+
+<h3>Editor</h3>
+
+@if(photo is not null){
+
+    <EditForm Model="@photo" OnSubmit="Save" FormName="PhotoForm" enctype="multipart/form-data">
+        <InputNumber @bind-Value="photo.Id" hidden />
+        <div class="mb-3">
+            <label for="photoTitle" class="form-label">Title:</label>
+            <InputText @bind-Value="photo.Title" class="form-control" id="photoTitle"/>
+        </div>
+        <div class="mb-3">
+            <label for="photoDescription" class="form-label">Description (optional):</label>
+            <InputTextArea @bind-Value="photo.Description" id="photoDescription" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label for="fileModelFile" class="form-label">File:</label>
+            <InputFile name="fileModel.File" class="form-control" id="fileModelFile" />
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </EditForm>
+    <img src="@photo.DataUrl" alt="@photo.Title" class="img-fluid rounded mx-auto d-block" />
+}
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    [SupplyParameterFromForm(FormName = "PhotoForm")]
+    Photo? photo { get; set; }
+
+    [SupplyParameterFromForm(FormName = "PhotoForm")]
+    FileModel? fileModel { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if(Id.HasValue)
+        {
+            photo ??= await PhotosRepository.GetPhotoByIdAsync(Id.Value);
+        }
+        else
+        {
+            photo ??= new Photo() { Title = "New Photo" };
+        }
+        fileModel ??= new FileModel();
+    }
+
+    async Task Save()
+    {
+        if (photo is not null)
+        {
+            if (fileModel?.File is not null)
+            {
+                using var memoryStream = new MemoryStream();
+                await fileModel.File.OpenReadStream().CopyToAsync(memoryStream);
+                photo.PhotoFile = memoryStream.ToArray();
+                photo.ImageMimeType = fileModel.File.ContentType;
+            }
+            if (photo.Id == 0)
+            {
+                await PhotosRepository.AddPhotoAsync(photo);
+            }
+            else
+            {
+                await PhotosRepository.UpdatePhotoAsync(photo);
+            }
+        }
+        NavigationManager.NavigateTo("photos/all");
+    }
+
+    class FileModel
+    {
+        public IFormFile? File { get; set; }
+    }
+}

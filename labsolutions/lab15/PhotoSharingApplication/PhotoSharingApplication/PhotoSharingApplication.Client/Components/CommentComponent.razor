@@ -1,0 +1,93 @@
+﻿<h3>CommentComponent</h3>
+
+@if(comment is not null){
+    @switch(commentState)
+    {
+        case CommentStates.View:
+            <p>View Mode</p>
+            <p>@comment.Subject</p>
+            <p>@comment.Body</p>
+            <button @onclick="OnEditClicked">Edit</button>
+            <button @onclick="OnDeleteClicked">Delete</button>
+            break;
+        case CommentStates.Insert:
+            <p>Insert Mode</p>
+            <input @bind="comment.Subject" />
+            <input @bind="comment.Body" />
+            <button @onclick="OnAddClicked">Add</button>
+            break;
+        case CommentStates.Edit:
+            <p>Edit Mode</p>
+            <input @bind="comment.Subject" />
+            <input @bind="comment.Body" />
+            <button @onclick="OnSaveClicked">Save</button>
+            <button @onclick="OnCancelClicked">Cancel</button>
+            break;
+        case CommentStates.Delete:
+            <p>Delete Mode</p>
+            <p>@comment.Subject</p>
+            <p>@comment.Body</p>
+            <button @onclick="OnDeleteConfirmedClicked">Delete!</button>
+            <button @onclick="OnCancelClicked">Cancel</button>
+            break;
+    }
+}
+
+@code {
+    [Parameter]
+    public CommentStates CommentState { get; set; } = CommentStates.View;
+    private CommentStates commentState;
+
+    [Parameter]
+    public Comment Comment { get; set; }
+    private Comment comment;
+
+    [Parameter]
+    public EventCallback<Comment> OnAddComment { get; set; }
+
+    [Parameter]
+    public EventCallback<Comment> OnDeleteComment { get; set; }
+
+    [Parameter]
+    public EventCallback<Comment> OnUpdateComment { get; set; }
+
+
+    protected override void OnParametersSet()
+    {
+        commentState = CommentState;
+        comment = new Comment() { Id = Comment.Id, Subject = Comment.Subject, Body = Comment.Body };
+    }
+
+    async Task OnEditClicked()
+    {
+        commentState = CommentStates.Edit;
+    }
+
+    async Task OnAddClicked()
+    {
+        await OnAddComment.InvokeAsync(comment);
+    }
+
+    async Task OnDeleteClicked()
+    {
+        commentState = CommentStates.Delete;
+    }
+
+    async Task OnSaveClicked()
+    {
+        commentState = CommentStates.View;
+        await OnUpdateComment.InvokeAsync(comment);
+    }
+
+    async Task OnCancelClicked()
+    {
+        commentState = CommentStates.View;
+    }
+
+    async Task OnDeleteConfirmedClicked()
+    {
+        commentState = CommentStates.View;
+        await OnDeleteComment.InvokeAsync(comment);
+    }
+
+}

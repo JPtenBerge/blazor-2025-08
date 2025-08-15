@@ -1,0 +1,29 @@
+﻿@page "/photos/all"
+@inject IPhotosRepository PhotosRepository
+<h3>All Photos</h3>
+
+<NavLink href="photos/create">Upload new Photo</NavLink>
+
+@if (photos is null)
+{
+    <p>...Loading...</p>
+} else
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var photo in photos)
+    {
+        <div class="col">
+            <PhotoCard Photo="photo" ShowDelete ShowDetails ShowUpdate />
+        </div>
+    }
+    </div>
+}
+
+@code {
+    IEnumerable<Photo> photos = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        photos = await PhotosRepository.GetPhotosAsync();
+    }
+}

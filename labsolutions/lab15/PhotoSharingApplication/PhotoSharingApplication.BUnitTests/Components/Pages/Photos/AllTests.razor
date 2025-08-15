@@ -1,0 +1,46 @@
+﻿@inherits TestContext
+@using PhotoSharingApplication.Components
+@using PhotoSharingApplication.Components.Pages.Photos
+@using PhotoSharingApplication.Core.Interfaces
+@using PhotoSharingApplication.Client.Core.Models;
+
+<h3>AllTests</h3>
+
+@code {
+    [Fact]
+    public void RendersEmpty_WhenPhotosIsNull()
+    {
+        // Arrange
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        mock.Setup(mbox => mbox.GetPhotosAsync()).ReturnsAsync((List<Photo>)null);
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+        
+        // Act
+        var cut = Render(@<All/>);
+
+        // Assert
+        cut.MarkupMatches(
+            @<text>
+        <h3>All Photos</h3>
+        <a href="photos/create">Upload new Photo</a>
+        <p>...Loading...</p>
+            </text>
+    );
+    }
+
+    [Fact]
+    public void RendersOnePhotoCard_ForEachPhoto()
+    {
+        //Arrange
+        Moq.Mock<IPhotosRepository> mock = new Moq.Mock<IPhotosRepository>();
+        var returnedList = new List<Photo>() { new Photo() { Id = 1, Title = "p1" }, new Photo() { Id = 2, Title = "p2" }, new Photo() { Id = 3, Title = "p3" } };
+        mock.Setup(mbox=>mbox.GetPhotosAsync()).ReturnsAsync(returnedList);
+        Services.AddSingleton<IPhotosRepository>(mock.Object);
+        
+        //Act
+        var cut = Render(@<All/>);
+
+        //Assert
+        cut.FindComponents<PhotoCard>().Should().HaveCount(3);
+    }
+}
