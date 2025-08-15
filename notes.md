@@ -303,8 +303,27 @@ Handig voor:
 
 
 
+## Testing
 
-
+- Unit testing
+  - zo klein mogelijk stukje code
+  - je roept jouw code aan
+  - hier hoor je de meeste van de te hebben   5000
+- Integration testing
+  - "iets aan het integreren"
+    - class A met class B
+    - database
+    - meerdere componenten 
+    - API-request
+  - je roept jouw code aan
+  - BUnit  ==> rendert component  gerenderde HTML
+  - hier hoor je minder van te hebben dan unittests - ~500
+- End-to-end testing / E2E
+  - de hele flow van de app
+  - van frontend naar backend naar database
+  - Playwright (Microsoft)
+  - hier roep je geen code aan. UI aansturen.
+  - hier hoor je minder van te hebben dan integratietests - ~50
 
 
 ## Overig
